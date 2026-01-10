@@ -1,6 +1,8 @@
 {
     "backends":[
-        "http://localhost:8081"
+        {"url": "http://localhost:8081",
+         "alive": "true",
+        "current_connections": "0"}
     ],
 
     "current":"http://localhost:8081"
