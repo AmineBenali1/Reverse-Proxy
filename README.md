@@ -22,12 +22,12 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ---
 
 ### 🔹 Reverse Proxy
-- [ ] Implement HTTP proxy handler (`http.Handler`)
-- [ ] Integrate `httputil.ReverseProxy`
-- [ ] Forward client requests to selected backend
-- [ ] Propagate request context to backend
-- [ ] Increment and decrement backend connection counters
-- [ ] Implement custom error handler to detect backend failures
+- [x] Implement HTTP proxy handler
+- [x] Integrate `httputil.NewSingleHostReverseProxy`
+- [x] Forward client requests to selected backend
+- [x] Propagate request context to backend
+- [x] Increment and decrement backend connection counters
+- [x] Implement custom error handler to detect backend failures
 
 ---
 
