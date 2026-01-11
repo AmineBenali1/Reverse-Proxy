@@ -18,6 +18,9 @@ type ServerPool struct {
 // Round-Robin
 
 func (sp *ServerPool) GetNextValidPeer() (uint64,error) {
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	
 	for range sp.Backends{
 		next := atomic.AddUint64(&sp.Current, 1) % uint64(len(sp.Backends))
 

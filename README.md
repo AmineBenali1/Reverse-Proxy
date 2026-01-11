@@ -32,11 +32,11 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ---
 
 ### 🔹 Health Monitoring
-- [ ] Implement background health checker using goroutines
-- [ ] Use `time.Ticker` for periodic health checks
-- [ ] Ping backend servers to verify availability
-- [ ] Update backend alive status safely
-- [ ] Log backend state changes (UP / DOWN)
+- [x] Implement background health checker using goroutines
+- [x] Use `time.Ticker` for periodic health checks
+- [x] Ping backend servers to verify availability
+- [x] Update backend alive status safely
+- [x] Log backend state changes (UP / DOWN)
 
 ---
 
