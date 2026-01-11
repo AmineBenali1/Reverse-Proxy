@@ -1,22 +1,22 @@
 # Reverse-Proxy
 
-I'll implement round-Robin first because i think it's easier, then I'll change it to least connections strategy
+I'll implement round-Robin first because i think it's easier, then I'll add least connections strategy and select between them dynamically
 
 ## 📌 TODO List
 
 ### 🔹 Core Architecture
 - [x] Initialize Go module (`go mod init`)
 - [x] Define core data structures (`Backend`, `ServerPool`, `ProxyConfig`)
-- [ ] Implement thread-safe server pool with mutexes / atomics
+- [x] Implement thread-safe server pool with mutexes / atomics
 - [ ] Handle case when no backend is available (return `503 Service Unavailable`)
 
 ---
 
 ### 🔹 Load Balancing
-- [ ] Define `LoadBalancer` interface
-- [ ] Implement **Round-Robin** load balancing strategy
+- [x] Define `LoadBalancer` interface
+- [x] Implement **Round-Robin** load balancing strategy
 - [ ] Implement **Least-Connections** load balancing strategy (at the end)
-- [ ] Ensure only healthy backends are selected
+- [x] Ensure only healthy backends are selected
 - [ ] Allow dynamic strategy selection via configuration
 
 ---
