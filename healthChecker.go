@@ -3,36 +3,38 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 )
 
-func PingBackend(b *Backend) {
+func PingBackend(b *Backend) bool {
 	url := b.URL
 	resp, err := http.Get(url.String())
 	if err != nil {
-		fmt.Println(url,"is DOWN:",err)
-		b.mux.Lock()
-		b.Alive = false
-		b.CurrentConns = 0
-		b.mux.Unlock()
-		return
+		fmt.Println(url, "is DOWN:", err)
+		return false
 	}
 	defer resp.Body.Close()
-
-	b.mux.Lock()
-	b.Alive = true
-	b.mux.Unlock()
-	fmt.Println(url,"is UP")
+	fmt.Println(url, "is UP")
+	return true
 }
 
-func startMonitoring(){
+func startMonitoring() {
 	ticker := time.NewTicker(proxyConfig.HealthCheckFreq)
-	go func(){
-		for range ticker.C{
+	go func() {
+		for range ticker.C {
 			fmt.Println("Pinging backends...")
-			for _ , b := range serverPool.Backends{
-				go PingBackend(b)
+			var wg sync.WaitGroup
+			for _, b := range serverPool.Backends {
+				wg.Add(1)
+				go func(backend *Backend) {
+					defer wg.Done()
+					alive := PingBackend(backend)
+					serverPool.SetBackendStatus(backend.URL, alive)
+				}(b)
 			}
+			wg.Wait()
+			fmt.Println("All backends pinged.")
 		}
 	}()
 }

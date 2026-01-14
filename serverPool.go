@@ -20,7 +20,7 @@ type ServerPool struct {
 func (sp *ServerPool) GetNextValidPeer() (uint64,error) {
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	
+
 	for range sp.Backends{
 		next := atomic.AddUint64(&sp.Current, 1) % uint64(len(sp.Backends))
 
@@ -52,6 +52,9 @@ func (sp *ServerPool) SetBackendStatus(uri *url.URL, alive bool) error{
 	for _ , backend := range sp.Backends {
 		if backend.URL == uri{
 			backend.Alive = alive
+			if !alive{
+				backend.CurrentConns = 0
+			}
 			return nil 
 		}
 	}

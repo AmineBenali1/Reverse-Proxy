@@ -60,23 +60,23 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 
 ### 🔹 Concurrency & Safety
 - [ ] Protect shared state using `sync.RWMutex`
-- [ ] Use `sync/atomic` for connection counters
+- [x] Use `sync/atomic` for connection counters
 - [ ] Avoid race conditions under concurrent requests
 - [ ] Verify code using Go race detector (`go run -race`)
 
 ---
 
 ### 🔹 Graceful Behavior
-- [ ] Handle client cancellation using `context.Context`
-- [ ] Cancel backend requests if client disconnects
-- [ ] Handle backend timeouts gracefully
+- [x] Handle client cancellation using `context.Context`
+- [x] Cancel backend requests if client disconnects
+- [x] Handle backend timeouts gracefully
 
 ---
 
 ### 🔹 Logging & Error Handling
 - [ ] Log incoming requests and backend selection
-- [ ] Log health check failures and recoveries
-- [ ] Handle proxy errors and mark backends as unhealthy
+- [x] Log health check failures and recoveries
+- [x] Handle proxy errors and mark backends as unhealthy
 
 ---
 

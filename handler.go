@@ -20,18 +20,17 @@ func initProxy() {
 			if err != nil {
 				// no backend alive. Mark in context that no backend is selected
 				ctx := context.WithValue(req.Context(), "no-backend", false)
-				req = req.WithContext(ctx)
+				*req = *req.WithContext(ctx)
 				// request will fail and ErrorHandler will handle
 				return
 			}
 			backend := serverPool.Backends[next]
-
 			// increment connections
 			atomic.AddInt64(&backend.CurrentConns, 1)
 
 			// attach backend to request context for later decrement in ModifyResponse or ErrorHandler
 			ctx := context.WithValue(req.Context(), "backend", backend)
-			req = req.WithContext(ctx)
+			*req = *req.WithContext(ctx)
 
 			req.URL.Scheme = backend.URL.Scheme
 			req.URL.Host = backend.URL.Host
