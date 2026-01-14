@@ -4,53 +4,65 @@ import (
 	"context"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	"sync/atomic"
 	"time"
 )
 
 var serverPool *ServerPool
 
-// using NewSingleHostReverseProxy
+// One proxy for the app, that chooses backend dynamically for each request
+var proxy *httputil.ReverseProxy
+
+func initProxy() {
+	proxy = &httputil.ReverseProxy{
+		Director: func(req *http.Request) {
+			next, err := serverPool.GetNextValidPeer()
+			if err != nil {
+				// no backend alive. Mark in context that no backend is selected
+				ctx := context.WithValue(req.Context(), "no-backend", false)
+				req = req.WithContext(ctx)
+				// request will fail and ErrorHandler will handle
+				return
+			}
+			backend := serverPool.Backends[next]
+
+			// increment connections
+			atomic.AddInt64(&backend.CurrentConns, 1)
+
+			// attach backend to request context for later decrement in ModifyResponse or ErrorHandler
+			ctx := context.WithValue(req.Context(), "backend", backend)
+			req = req.WithContext(ctx)
+
+			req.URL.Scheme = backend.URL.Scheme
+			req.URL.Host = backend.URL.Host
+			req.Host = backend.URL.Host
+		},
+
+		ModifyResponse: func(resp *http.Response) error {
+			// decrement connection count after response
+			if b, ok := resp.Request.Context().Value("backend").(*Backend); ok {
+				atomic.AddInt64(&b.CurrentConns, -1)
+			}
+			return nil
+		},
+		
+		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+			// decrement connection count if request failed
+			if b, ok := r.Context().Value("backend").(*Backend); ok {
+				atomic.AddInt64(&b.CurrentConns, -1)
+			}
+			http.Error(w, "Backend unavailable", http.StatusServiceUnavailable)
+		},
+	}
+}
+
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
-	// set context with timeout of 5s
+	// set a timeout context
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	// get the next valid backend's id
-	next, err := serverPool.GetNextValidPeer()
-	if err != nil {
-		http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
-		return
-	}
-
-	backend := serverPool.Backends[next]
-	// increment the current connections using atomic
-	atomic.AddInt64(&backend.CurrentConns, 1)
-
-	uri, err := url.Parse(backend.URL.String())
-	if err != nil {
-		http.Error(w, "Bad backend URL", http.StatusInternalServerError)
-		return
-	}
-
-	// proxy per request (will change it to proxy per backend later)
-	proxy := httputil.NewSingleHostReverseProxy(uri)
-
-	// clone the context and Serve the request
+	// clone the request with the timeout
 	req := r.Clone(ctx)
+
 	proxy.ServeHTTP(w, req)
-
-	// decrement the current connections after finishing proccessing the request
-	proxy.ModifyResponse = func(resp *http.Response) error {
-		atomic.AddInt64(&backend.CurrentConns, -1)
-		return nil
-	}
-
-	// decrement also if the request fails
-	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
-		atomic.AddInt64(&backend.CurrentConns, -1)
-		http.Error(w, "Backend unavailable", http.StatusServiceUnavailable)
-	}
-
 }

@@ -25,8 +25,8 @@ func PingBackend(b *Backend) {
 	fmt.Println(url,"is UP")
 }
 
-func startMonitoring(interval time.Duration){
-	ticker := time.NewTicker(interval)
+func startMonitoring(){
+	ticker := time.NewTicker(proxyConfig.HealthCheckFreq)
 	go func(){
 		for range ticker.C{
 			fmt.Println("Pinging backends...")
