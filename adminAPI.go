@@ -18,7 +18,7 @@ func getStatus(w http.ResponseWriter, _ *http.Request) {
 	serverPool.mu.RLock()
 	for _, backend := range serverPool.Backends {
 		details := map[string]interface{}{
-			"url":                 backend.URL,
+			"url":                 backend.URL.String(),
 			"alive":               backend.Alive,
 			"current_connections": backend.CurrentConns,
 		}
@@ -63,7 +63,7 @@ func addBackend(w http.ResponseWriter, r *http.Request) {
 	if serverPool == nil {
 		serverPool = &ServerPool{}
 	}
-	if err := serverPool.AddBackend(newBackend) ; err != nil{
+	if err := serverPool.AddBackend(newBackend); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	} else {
 		w.Write([]byte("Backend added"))
