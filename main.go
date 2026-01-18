@@ -11,7 +11,7 @@ import (
 func main() {
 
 	proxyConfig = ProxyConfig{8080, "round-robin", 10 * time.Second}
-	url1, _ := url.Parse("http://localhost:8081")
+	url1, _ := url.Parse("http://localhost:8084")
 	url2, _ := url.Parse("http://localhost:8082")
 	url3, _ := url.Parse("http://localhost:8083")
 	backend1 := &Backend{URL: url1, Alive: true, CurrentConns: 0}
