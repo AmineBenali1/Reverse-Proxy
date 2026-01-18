@@ -12,6 +12,7 @@ func getStatus(w http.ResponseWriter, _ *http.Request) {
 	var activeBackends int
 	backends := make([]map[string]interface{}, 0, len(serverPool.Backends))
 
+	serverPool.mu.RLock()
 	for _, backend := range serverPool.Backends {
 		details := map[string]interface{}{
 			"url":                 backend.URL,
@@ -23,6 +24,7 @@ func getStatus(w http.ResponseWriter, _ *http.Request) {
 			activeBackends++
 		}
 	}
+	serverPool.mu.RUnlock()
 
 	response := map[string]interface{}{
 		"total_backends":  len(serverPool.Backends),
@@ -45,7 +47,9 @@ func addBackend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+	serverPool.mu.Lock()
 	serverPool.Backends = append(serverPool.Backends, newBackend)
+	serverPool.mu.Unlock()
 	w.Write([]byte("Backend added"))
 }
 
@@ -57,7 +61,9 @@ func deleteBackend(w http.ResponseWriter, r *http.Request) {
 	}
 	for i, backend := range serverPool.Backends {
 		if backend.URL == backendToDelete.URL {
+			serverPool.mu.Lock()
 			serverPool.Backends = append(serverPool.Backends[:i], serverPool.Backends[i+1:]...)
+			serverPool.mu.Unlock()
 			w.Write([]byte("Backend Deleted Successfully"))
 			return
 		}
