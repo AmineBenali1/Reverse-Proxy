@@ -25,6 +25,10 @@ func startMonitoring() {
 		for range ticker.C {
 			fmt.Println("Pinging backends...")
 			var wg sync.WaitGroup
+			if serverPool == nil {
+				fmt.Println("Server pool not initialized, skipping health check.")
+				continue
+			}
 			for _, b := range serverPool.Backends {
 				wg.Add(1)
 				go func(backend *Backend) {

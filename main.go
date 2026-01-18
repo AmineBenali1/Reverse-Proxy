@@ -4,25 +4,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
+	// "net/url"
 	"time"
 )
 
 func main() {
 
 	proxyConfig = ProxyConfig{8080, "round-robin", 10 * time.Second}
-	url1, _ := url.Parse("http://localhost:8084")
-	url2, _ := url.Parse("http://localhost:8082")
-	url3, _ := url.Parse("http://localhost:8083")
-	backend1 := &Backend{URL: url1, Alive: true, CurrentConns: 0}
-	backend2 := &Backend{URL: url2, Alive: true, CurrentConns: 0}
-	backend3 := &Backend{URL: url3, Alive: true, CurrentConns: 0}
-	backends := []*Backend{}
-	backends = append(backends, backend1, backend2, backend3)
-	serverPool = &ServerPool{Backends: backends}
 
 	initProxy()
 	startMonitoring()
+
+	go StartAdminAPI()
 
 	addr := fmt.Sprintf(":%d", proxyConfig.Port)
 
