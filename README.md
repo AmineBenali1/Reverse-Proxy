@@ -8,7 +8,7 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 - [x] Initialize Go module (`go mod init`)
 - [x] Define core data structures (`Backend`, `ServerPool`, `ProxyConfig`)
 - [x] Implement thread-safe server pool with mutexes / atomics
-- [ ] Handle case when no backend is available (return `503 Service Unavailable`)
+- [x] Handle case when no backend is available 
 
 ---
 
@@ -41,12 +41,12 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ---
 
 ### 🔹 Admin API
-- [ ] Implement Admin API on a separate port
-- [ ] `GET /status` — show backend health and connection counts
-- [ ] `POST /backends` — add a new backend dynamically
-- [ ] `DELETE /backends` — remove an existing backend
-- [ ] Validate input and handle duplicate backend URLs
-- [ ] Return JSON responses
+- [x] Implement Admin API on a separate port
+- [x] `GET /status` — show backend health and connection counts
+- [x] `POST /backends` — add a new backend dynamically
+- [x] `DELETE /backends` — remove an existing backend
+- [x] Validate input and handle duplicate backend URLs
+- [x] Return JSON responses
 
 ---
 
@@ -54,14 +54,14 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 - [ ] Load proxy configuration from JSON file
 - [ ] Support command-line flag `--config`
 - [ ] Initialize server pool from config (optional empty start)
-- [ ] Start proxy server and admin API concurrently
+- [x] Start proxy server and admin API concurrently
 
 ---
 
 ### 🔹 Concurrency & Safety
-- [ ] Protect shared state using `sync.RWMutex`
+- [x] Protect shared state using `sync.RWMutex`
 - [x] Use `sync/atomic` for connection counters
-- [ ] Avoid race conditions under concurrent requests
+- [x] Avoid race conditions under concurrent requests
 - [ ] Verify code using Go race detector (`go run -race`)
 
 ---
