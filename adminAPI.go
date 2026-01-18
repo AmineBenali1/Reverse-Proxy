@@ -9,8 +9,8 @@ import (
 
 func getStatus(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if serverPool == nil {
-		http.Error(w, "Server pool not initialized", http.StatusServiceUnavailable)
+	if serverPool == nil || len(serverPool.Backends) == 0 {
+		http.Error(w, "No Backends", http.StatusServiceUnavailable)
 		return
 	}
 	var activeBackends int
@@ -71,8 +71,8 @@ func addBackend(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBackend(w http.ResponseWriter, r *http.Request) {
-	if serverPool == nil {
-		http.Error(w, "Server pool not initialized", http.StatusServiceUnavailable)
+	if serverPool == nil || len(serverPool.Backends) == 0 {
+		http.Error(w, "No Backends", http.StatusServiceUnavailable)
 		return
 	}
 	var req struct {
