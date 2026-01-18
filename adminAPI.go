@@ -43,4 +43,15 @@ func getStatus(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
+func addBackend(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/backends" {
+		http.Error(w, "Path not found", http.StatusNotFound)
+		return
+	}
+	var newBackend *Backend
+	json.NewDecoder(r.Body).Decode(&newBackend)
+	serverPool.Backends = append(serverPool.Backends, newBackend)
+	w.Write([]byte("Backend added"))
+}
+
 
