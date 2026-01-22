@@ -15,9 +15,9 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ### 🔹 Load Balancing
 - [x] Define `LoadBalancer` interface
 - [x] Implement **Round-Robin** load balancing strategy
-- [ ] Implement **Least-Connections** load balancing strategy (at the end)
+- [x] Implement **Least-Connections** load balancing strategy (at the end)
 - [x] Ensure only healthy backends are selected
-- [ ] Allow dynamic strategy selection via configuration
+- [x] Allow dynamic strategy selection via configuration
 
 ---
 
@@ -53,7 +53,7 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ### 🔹 Configuration & Startup
 - [x] Load proxy configuration from JSON file
 - [x] Support command-line flag `--config`
-- [ ] Initialize server pool from config (optional empty start)
+- [x] Initialize server pool from config (optional empty start)
 - [x] Start proxy server and admin API concurrently
 
 ---

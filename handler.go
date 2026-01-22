@@ -57,7 +57,7 @@ func initProxy() {
 
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	// set a timeout context
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
 	// clone the request with the timeout

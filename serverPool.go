@@ -20,16 +20,35 @@ type ServerPool struct {
 // Round-Robin
 
 func (sp *ServerPool) GetNextValidPeer() (uint64, error) {
-	sp.mu.Lock()
-	defer sp.mu.Unlock()
 
-	for range sp.Backends {
+	if proxyConfig.Strategy == "round_robin"{
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+
+		for range sp.Backends {
 		next := atomic.AddUint64(&sp.Current, 1) % uint64(len(sp.Backends))
 
 		if sp.Backends[next].Alive {
 			return next, nil
 		}
 	}
+	} else {
+		sp.mu.RLock()
+		defer sp.mu.RUnlock()
+		
+		next := uint64(math.MaxUint64)
+		least_connections := int64(math.MaxInt64)
+		for i , b := range sp.Backends {
+			if b.Alive && b.CurrentConns < least_connections{
+				next = uint64(i)
+				least_connections = b.CurrentConns
+			}
+		}
+		if next != uint64(math.MaxUint64){
+			return next , nil
+		}
+
+	} 
 	return math.MaxUint64, errors.New("No available backend")
 }
 

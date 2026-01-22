@@ -1,5 +1,5 @@
 {
     "port": 8080,
-    "strategy": "round_robin",
+    "strategy": "least_connections",
     "health_check_frequency": 10000000000 
 }

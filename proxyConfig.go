@@ -25,7 +25,9 @@ func LoadProxyConfig(configPath string) {
 	if err := json.NewDecoder(file).Decode(&proxyConfig); err != nil {
 		panic(err)
 	}
-
+	if proxyConfig.Strategy != "round_robin" && proxyConfig.Strategy != "least_connections"{
+		panic("Strategy not defined ! available strategies are round robin and least connections")
+	}
 	fmt.Println("proxy running on port", proxyConfig.Port)
 	fmt.Println("Load balancing strategy:", proxyConfig.Strategy)
 	fmt.Println("Health check frequency:", proxyConfig.HealthCheckFreq)
