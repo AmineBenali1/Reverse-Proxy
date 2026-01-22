@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"math"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -60,4 +62,43 @@ func (sp *ServerPool) SetBackendStatus(uri *url.URL, alive bool) error {
 	}
 
 	return errors.New("Backend not found")
+}
+
+func LoadDefinedBackends(backendConfigPath string) {
+	file, err := os.Open(backendConfigPath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Temporary structs with URL as string
+	type tmpBackend struct {
+		URL          string `json:"url"`
+		Alive        bool   `json:"alive"`
+		CurrentConns int64  `json:"current_connections"`
+	}
+
+	type tmpServerPool struct {
+		Backends []tmpBackend `json:"backends"`
+		Current  uint64       `json:"current"`
+	}
+
+	var tmpPool tmpServerPool
+	if err := json.NewDecoder(file).Decode(&tmpPool); err != nil {
+		panic(err)
+	}
+
+	// convert to actual server pool
+	serverPool = &ServerPool{Current: tmpPool.Current}
+	for _, b := range tmpPool.Backends {
+		ParsedUrl, err := url.Parse(b.URL)
+		if err != nil {
+			panic(err)
+		}
+		serverPool.Backends = append(serverPool.Backends, &Backend{
+			URL:          ParsedUrl,
+			Alive:        b.Alive,
+			CurrentConns: b.CurrentConns,
+		})
+	}
 }

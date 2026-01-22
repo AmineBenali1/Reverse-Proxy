@@ -51,8 +51,8 @@ I'll implement round-Robin first because i think it's easier, then I'll add leas
 ---
 
 ### 🔹 Configuration & Startup
-- [ ] Load proxy configuration from JSON file
-- [ ] Support command-line flag `--config`
+- [x] Load proxy configuration from JSON file
+- [x] Support command-line flag `--config`
 - [ ] Initialize server pool from config (optional empty start)
 - [x] Start proxy server and admin API concurrently
 

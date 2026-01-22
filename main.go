@@ -1,15 +1,22 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 func main() {
+	// flags
+	configPath := flag.String("config", "config.json", "")
+	backendConfigPath := flag.String("backend-config", "", "")
+	flag.Parse()
 
-	proxyConfig = ProxyConfig{8080, "round-robin", 10 * time.Second}
+	LoadProxyConfig(*configPath)
+	if *backendConfigPath != "" {
+		LoadDefinedBackends(*backendConfigPath)
+	}
 
 	initProxy()
 	startMonitoring()
